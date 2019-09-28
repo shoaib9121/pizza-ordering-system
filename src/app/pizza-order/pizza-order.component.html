@@ -36,40 +36,32 @@
       <tr *ngFor="let veg of toppings.veg; let i = index">
         <td scope="row">{{veg.name}} ({{veg.rate | currency:'USD'}})</td>
         <td>
-          <!-- <div class="input-group"> -->
           <label class="checkbox-outer">
             <input id="{{'sm-'+i}}" type="checkbox" [value]="veg.rate" data-size="small"
               (click)="chooseItem($event, veg)">
             <span class="checkmark"></span>
           </label>
-          <!-- </div> -->
         </td>
         <td>
-          <!-- <div class="input-group"> -->
           <label class="checkbox-outer">
             <input id="{{'md-'+i}}" type="checkbox" [value]="veg.rate" data-size="medium"
               (click)="chooseItem($event, veg)">
             <span class="checkmark"></span>
           </label>
-          <!-- </div> -->
         </td>
         <td>
-          <!-- <div class="input-group"> -->
           <label class="checkbox-outer">
             <input id="{{'lg-'+i}}" type="checkbox" [value]="veg.rate" data-size="large"
               (click)="chooseItem($event, veg)">
             <span class="checkmark"></span>
           </label>
-          <!-- </div> -->
         </td>
         <td>
-          <!-- <div class="input-group"> -->
           <label class="checkbox-outer">
             <input id="{{'xlg-'+i}}" type="checkbox" [value]="veg.rate" data-size="extralarge"
               (click)="chooseItem($event, veg)">
             <span class="checkmark"></span>
           </label>
-          <!-- </div> -->
         </td>
       </tr>
       <tr>
@@ -78,40 +70,32 @@
       <tr *ngFor="let veg of toppings.nonveg; let i = index">
         <td scope="row">{{veg.name}} ({{veg.rate | currency:'USD'}})</td>
         <td>
-          <!-- <div class="input-group"> -->
           <label class="checkbox-outer">
             <input id="{{'sm-'+i}}" type="checkbox" [value]="veg.rate" data-size="small"
               (click)="chooseItem($event, veg)">
             <span class="checkmark"></span>
           </label>
-          <!-- </div> -->
         </td>
         <td>
-          <!-- <div class="input-group"> -->
           <label class="checkbox-outer">
             <input id="{{'md-'+i}}" type="checkbox" [value]="veg.rate" data-size="medium"
               (click)="chooseItem($event, veg)">
             <span class="checkmark"></span>
           </label>
-          <!-- </div> -->
         </td>
         <td>
-          <!-- <div class="input-group"> -->
           <label class="checkbox-outer">
             <input id="{{'lg-'+i}}" type="checkbox" [value]="veg.rate" data-size="large"
               (click)="chooseItem($event, veg)">
             <span class="checkmark"></span>
           </label>
-          <!-- </div> -->
         </td>
         <td>
-          <!-- <div class="input-group"> -->
           <label class="checkbox-outer">
             <input id="{{'xlg-'+i}}" type="checkbox" [value]="veg.rate" data-size="extralarge"
               (click)="chooseItem($event, veg)">
             <span class="checkmark"></span>
           </label>
-          <!-- </div> -->
         </td>
       </tr>
       <tr>
