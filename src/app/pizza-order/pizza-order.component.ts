@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import * as $ from 'jquery';
 
 @Component({
@@ -6,7 +6,7 @@ import * as $ from 'jquery';
   templateUrl: './pizza-order.component.html',
   styleUrls: ['./pizza-order.component.scss']
 })
-export class PizzaOrderComponent implements OnInit, AfterViewInit {
+export class PizzaOrderComponent implements OnInit {
   constructor() { }
   offer1;
   offer2;
@@ -80,10 +80,6 @@ export class PizzaOrderComponent implements OnInit, AfterViewInit {
   ngOnInit() {
   }
 
-  ngAfterViewInit() {
-    // this.inputButtons();
-  }
-
   chooseToppingItem(e, obj) {
     let target = e.currentTarget,
       id = target.getAttribute('id'),
@@ -105,14 +101,12 @@ export class PizzaOrderComponent implements OnInit, AfterViewInit {
       })
     } else {
       let index;
-      // this.order[size].forEach((val, i) => {
       let checkItem = this.order[size][0]["toppings"].find((element, j) => {
         if (element.id === item.id) {
           index = j;
           return element;
         }
       });
-      // })
       this.order[size].forEach((val, k) => {
         this.order[size][k].toppings.splice(index, 1)
       })
@@ -150,7 +144,6 @@ export class PizzaOrderComponent implements OnInit, AfterViewInit {
         if (parseInt(input.val()) == input.attr('max')) {
           $(this).attr('disabled', true);
         }
-
       }
       this.checkPromotions();
     } else {
@@ -160,10 +153,8 @@ export class PizzaOrderComponent implements OnInit, AfterViewInit {
   }
 
   orderQuantity(size, currentVal, type) {
-    // if (currentVal > 0) {
     if (type == 'plus') {
       var cloneDeal = JSON.parse(JSON.stringify(this.order[size]));
-      // cloneDeal = cloneDeal.length>0 ? cloneDeal[0] : [];
       if (cloneDeal.length > 0) {
         this.order[size].push(cloneDeal[0]);
       } else { // NO TOPPING ADDED BY DEFAULT
@@ -175,18 +166,14 @@ export class PizzaOrderComponent implements OnInit, AfterViewInit {
     } else {
       this.order[size].splice(0, 1);
       if (this.order[size].length == 0) {
-        // let els = <HTMLCollection>document.getElementsByClassName(size + '-checkbox');
         let els = document.getElementsByClassName(size + '-checkbox');
-        // let els = $('.'+size+'-checkbox');
         console.log('els', els)
         Array.prototype.forEach.call(els, function (el, i) {
           el.checked = false;
-          console.log(el.checked);
         });
       }
     }
-    // }
-    console.log(this.order)
+    // console.log(this.order)
   }
 
   checkPromotions() {
@@ -258,10 +245,29 @@ export class PizzaOrderComponent implements OnInit, AfterViewInit {
           rate = parseFloat(element['rate']);
         }
         let toppings = 'toppings' in element ? element.toppings : [];
+        let pep, pepRate, bbq, bbqRate, sumOfPairDeal;
         if (toppings.length > 0) {
           toppings.forEach(topping => {
-            sumPrice += parseFloat(topping.rate);
+            if (size == 'large') {
+              if (topping.name.toLowerCase() === 'pepperoni') {
+                pepRate = parseFloat(topping.rate);
+                pep = true;
+              }
+              if (topping.name.toLowerCase() === 'barbecue chicken') {
+                bbqRate = parseFloat(topping.rate);
+                bbq = true;
+              }
+              sumPrice += parseFloat(topping.rate);
+            } else {
+              sumPrice += parseFloat(topping.rate);
+            }
           })
+          if (size == 'large') {
+            sumOfPairDeal = pepRate + bbqRate;
+            if (pep && bbq) {
+              this.lgdiscount = (sumPrice - (sumOfPairDeal)) + (sumOfPairDeal / 2); // CALCULATION FOR 50% DISCOUNT IN CASE OF BOTH PEPPERONI AND BBQ CHICKEN
+            }
+          }
         }
       });
       sumPrice += (rate * (qty - 1)); // DEDUCT DEFAULT SIZE RATE FROM NO.OF QUANTITY AS IT HAS ALREADY BEEN ADDED ONCE IN SWITCH CASE ABOVE
@@ -269,25 +275,23 @@ export class PizzaOrderComponent implements OnInit, AfterViewInit {
 
     // HANDLE OFFER 3
     if ((orderArr.length > 0 && size == 'large') && this.offer3 && sumPrice > 0) {
-      this.lgdiscount = (sumPrice / 2);
       console.log(this.lgdiscount)
-      sumPrice = sumPrice;
-      return `<b>DP: $${this.lgdiscount.toFixed(2)}</b>`;
-      // return `<span class='strike'> $${sumPrice} </span> $${this.lgdiscount}`;
+      return `<b>AP: $${sumPrice}</b> <br> <b>DP: $${this.lgdiscount.toFixed(2)}</b>`;
+      // return `<span class='strike'> $${sumPrice} </span> <b>DP: $${this.lgdiscount.toFixed(2)}</b>`;
     }
     // HANDLE OFFER 2
     else if (this.offer2 && size == 'medium' && sumPrice > 0) {
-      this.mddiscount = this.pizzaSizes.medium.rate;
+      this.mddiscount = (9 * qty).toFixed(2);
       this.showDiscounted = true;
-      return `<b>DP: $9.00 </b>`;
-      // return `<span class='strike'> $${sumPrice} </span> $${this.mddiscount}`;
+      return `<b>AP: $${sumPrice}</b> <br> <b>DP: $ ${this.mddiscount} </b>`;
+      // return `<span class='strike'> $${sumPrice} </span> <b>DP: $ ${(9*qty).toFixed(2)} </b>`;
     }
     // HANDLE OFFER 1
     else if (this.offer1 && size == 'small' && sumPrice > 0) {
       this.smdiscount = this.pizzaSizes.small.rate;
       this.showDiscounted = true;
-      return `<b>DP: $${this.smdiscount.toFixed(2)} </b>`;
-      // return `<span class='strike'> $${sumPrice} </span> $${this.smdiscount}`;
+      return `<b>AP: $${sumPrice}</b> <br> <b>DP: $${this.smdiscount.toFixed(2)} </b>`;
+      // return `<span class='strike'> $${sumPrice} </span> <b>DP: $${this.smdiscount.toFixed(2)} </b>`;
     }
     else {
       return `<b> ${sumPrice == 0 ? "" : '$' + sumPrice.toFixed(2)} </b>`;
