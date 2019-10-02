@@ -7,8 +7,8 @@
     </div>
     <div class="card-block">
       <ul class="list">
-        <li class="item"><strong>Offer 1</strong> 1 Medium Pizza with 2 topping = $5</li>
-        <li class="item"><strong>Offer 2</strong> 2 Medium Pizza with 4 topping each = $9</li>
+        <li class="item"><strong>Offer 1</strong> 1 Small Pizza with 2 toppings = $5</li>
+        <li class="item"><strong>Offer 2</strong> 2 Medium Pizza with 4 toppings each = $9</li>
         <li class="item"><strong>Offer 3</strong> 1 Large with 4 toppings ( Peperoni and Barbecue chicken are counted as
           2
           toppings)- 50% discount</li>
@@ -23,10 +23,94 @@
     <thead>
       <tr>
         <th scope="col">Toppings</th>
-        <th scope="col">Small ({{pizzaSizes.small.rate | currency:'USD' }}) </th>
-        <th scope="col">Medium ({{pizzaSizes.medium.rate | currency:'USD' }})</th>
-        <th scope="col">Large ({{pizzaSizes.large.rate | currency:'USD' }})</th>
-        <th scope="col">Extra Large ({{pizzaSizes.extralarge.rate | currency:'USD' }})</th>
+        <th scope="col">Small ({{pizzaSizes.small.rate | currency:'USD' }})
+          <div class="quantity-btns input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text p-0">
+                <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="minus"
+                  data-field="small" (click)="plusminus($event)">
+                  -
+                </button>
+              </span>
+            </div>
+            <input type="text" name="small" class="form-control p-0 text-center input-number" value="0" min="0"
+              max="1">
+            <div class="input-group-append">
+              <span class="input-group-text p-0">
+                <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="plus"
+                  data-field="small" (click)="plusminus($event)">
+                  +
+                </button>
+              </span>
+            </div>
+          </div>
+        </th>
+        <th scope="col">Medium ({{pizzaSizes.medium.rate | currency:'USD' }})
+          <div class="quantity-btns input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text p-0">
+                <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="minus"
+                  data-field="medium" (click)="plusminus($event)">
+                  -
+                </button>
+              </span>
+            </div>
+            <input type="text" name="medium" class="form-control p-0 text-center input-number" value="0" min="0"
+              max="2">
+            <div class="input-group-append">
+              <span class="input-group-text p-0">
+                <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="plus"
+                  data-field="medium" (click)="plusminus($event)">
+                  +
+                </button>
+              </span>
+            </div>
+          </div>
+        </th>
+        <th scope="col">Large ({{pizzaSizes.large.rate | currency:'USD' }})
+          <div class="quantity-btns input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text p-0">
+                <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="minus"
+                  data-field="large" (click)="plusminus($event)">
+                  -
+                </button>
+              </span>
+            </div>
+            <input type="text" name="large" class="form-control p-0 text-center input-number" value="0" min="0"
+              max="1">
+            <div class="input-group-append">
+              <span class="input-group-text p-0">
+                <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="plus"
+                  data-field="large" (click)="plusminus($event)">
+                  +
+                </button>
+              </span>
+            </div>
+          </div>
+        </th>
+        <th scope="col">Extra Large ({{pizzaSizes.extralarge.rate | currency:'USD' }})
+          <div class="quantity-btns input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text p-0">
+                <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="minus"
+                  data-field="extralarge" (click)="plusminus($event)">
+                  -
+                </button>
+              </span>
+            </div>
+            <input type="text" name="extralarge" class="form-control p-0 text-center input-number" value="0" min="0"
+              max="1">
+            <div class="input-group-append">
+              <span class="input-group-text p-0">
+                <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="plus"
+                  data-field="extralarge" (click)="plusminus($event)">
+                  +
+                </button>
+              </span>
+            </div>
+          </div>
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -35,31 +119,31 @@
       </tr>
       <tr *ngFor="let veg of toppings.veg; let i = index">
         <td scope="row">{{veg.name}} ({{veg.rate | currency:'USD'}})</td>
-        <td>
+        <td [ngClass]="{'disabled': order.small.length<1}">
           <label class="checkbox-outer">
-            <input id="{{'sm-'+i}}" type="checkbox" [value]="veg.rate" data-size="small"
-              (click)="chooseItem($event, veg)">
+            <input id="{{'sm-v-'+i}}" class="small-checkbox" type="checkbox" [value]="veg.rate" data-size="small"
+              [disabled]="order.small.length<1" (click)="chooseToppingItem($event, veg)">
             <span class="checkmark"></span>
           </label>
         </td>
-        <td>
+        <td [ngClass]="{'disabled': order.medium.length<1}">
           <label class="checkbox-outer">
-            <input id="{{'md-'+i}}" type="checkbox" [value]="veg.rate" data-size="medium"
-              (click)="chooseItem($event, veg)">
+            <input id="{{'md-v-'+i}}" class="medium-checkbox" type="checkbox" [value]="veg.rate" data-size="medium"
+              [disabled]="order.medium.length<1" (click)="chooseToppingItem($event, veg)">
             <span class="checkmark"></span>
           </label>
         </td>
-        <td>
+        <td [ngClass]="{'disabled': order.large.length<1}">
           <label class="checkbox-outer">
-            <input id="{{'lg-'+i}}" type="checkbox" [value]="veg.rate" data-size="large"
-              (click)="chooseItem($event, veg)">
+            <input id="{{'lg-v-'+i}}" class="large-checkbox" type="checkbox" [value]="veg.rate" data-size="large"
+              [disabled]="order.large.length<1" (click)="chooseToppingItem($event, veg)">
             <span class="checkmark"></span>
           </label>
         </td>
-        <td>
+        <td [ngClass]="{'disabled': order.extralarge.length<1}">
           <label class="checkbox-outer">
-            <input id="{{'xlg-'+i}}" type="checkbox" [value]="veg.rate" data-size="extralarge"
-              (click)="chooseItem($event, veg)">
+            <input id="{{'xlg-v-'+i}}" class="extralarge-checkbox" type="checkbox" [value]="veg.rate" data-size="extralarge"
+              [disabled]="order.extralarge.length<1" (click)="chooseToppingItem($event, veg)">
             <span class="checkmark"></span>
           </label>
         </td>
@@ -69,31 +153,31 @@
       </tr>
       <tr *ngFor="let veg of toppings.nonveg; let i = index">
         <td scope="row">{{veg.name}} ({{veg.rate | currency:'USD'}})</td>
-        <td>
+        <td [ngClass]="{'disabled': order.small.length<1}">
           <label class="checkbox-outer">
-            <input id="{{'sm-'+i}}" type="checkbox" [value]="veg.rate" data-size="small"
-              (click)="chooseItem($event, veg)">
+            <input id="{{'sm-nv-'+i}}" class="small-checkbox" type="checkbox" [value]="veg.rate" data-size="small"
+              [disabled]="order.small.length<1" (click)="chooseToppingItem($event, veg)">
             <span class="checkmark"></span>
           </label>
         </td>
-        <td>
+        <td [ngClass]="{'disabled': order.medium.length<1}">
           <label class="checkbox-outer">
-            <input id="{{'md-'+i}}" type="checkbox" [value]="veg.rate" data-size="medium"
-              (click)="chooseItem($event, veg)">
+            <input id="{{'md-nv-'+i}}" class="medium-checkbox" type="checkbox" [value]="veg.rate" data-size="medium"
+              [disabled]="order.medium.length<1" (click)="chooseToppingItem($event, veg)">
             <span class="checkmark"></span>
           </label>
         </td>
-        <td>
+        <td [ngClass]="{'disabled': order.large.length<1}">
           <label class="checkbox-outer">
-            <input id="{{'lg-'+i}}" type="checkbox" [value]="veg.rate" data-size="large"
-              (click)="chooseItem($event, veg)">
+            <input id="{{'lg-nv-'+i}}" class="large-checkbox" type="checkbox" [value]="veg.rate" data-size="large"
+              [disabled]="order.large.length<1" (click)="chooseToppingItem($event, veg)">
             <span class="checkmark"></span>
           </label>
         </td>
-        <td>
+        <td [ngClass]="{'disabled': order.extralarge.length<1}">
           <label class="checkbox-outer">
-            <input id="{{'xlg-'+i}}" type="checkbox" [value]="veg.rate" data-size="extralarge"
-              (click)="chooseItem($event, veg)">
+            <input id="{{'xlg-nv-'+i}}" class="extralarge-checkbox" type="checkbox" [value]="veg.rate" data-size="extralarge"
+              [disabled]="order.extralarge.length<1" (click)="chooseToppingItem($event, veg)">
             <span class="checkmark"></span>
           </label>
         </td>
@@ -103,8 +187,8 @@
       </tr>
       <tr>
         <th>Offers</th>
-        <td></td>
         <td>{{offer1}}</td>
+        <td>{{offer2}}</td>
         <td>{{offer3}}</td>
         <td></td>
       </tr>

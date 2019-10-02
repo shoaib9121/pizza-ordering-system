@@ -1,3 +1,12 @@
+.quantity-btns {
+    input{
+        max-width: 35px;
+        font-size: 0.8rem;
+    }
+    .btn-number:focus{
+        box-shadow: none;
+    }
+}
 .list {
     list-style-type: none;
 
@@ -14,11 +23,23 @@
     }
     td {
         font-size: 0.9rem;
+        position: relative;
         .strike {
             text-decoration: line-through;
             color          : red;
         }
     }
+    td.disabled {
+        background: #fafafa;
+    }
+    // td.disabled:before {
+    //     background: #fafafa;
+    //     position: absolute;
+    //     z-index: 9;
+    //     top: 0;
+    //     left: 0;
+    //     width: 100%;
+    // }
     .total{
         font-size: 0.7rem;
         background-color: #67dec3;
@@ -42,9 +63,12 @@
 .checkbox-outer input {
     position: absolute;
     opacity : 0;
-    cursor  : pointer;
     height  : 0;
     width   : 0;
+}
+
+.checkbox-outer input:not(disabled) {
+    cursor  : pointer;
 }
 
 .checkmark {
@@ -58,8 +82,12 @@
     transform       : translateX(-50%);
 }
 
-.checkbox-outer:hover input~.checkmark {
-    background-color: #ccc;
+// .checkbox-outer:hover input~.checkmark {
+//     background-color: #ccc;
+// }
+
+.checkbox-outer input:disabled {
+    cursor: not-allowed;
 }
 
 .checkbox-outer input:checked~.checkmark {
