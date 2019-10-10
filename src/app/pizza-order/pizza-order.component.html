@@ -23,6 +23,77 @@
     <thead>
       <tr>
         <th scope="col">Toppings</th>
+        <th scope="col" *ngFor="let pizza of pizzas">{{pizza.size}} {{pizza.price | currency:'USD'}}
+          <div class="quantity-btns input-group">
+            <div class="input-group-prepend">
+              <span class="input-group-text p-0">
+                <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="minus"
+                  data-field="small" (click)="plusminus($event)">
+                  -
+                </button>
+              </span>
+            </div>
+            <input type="text" name="small" class="form-control p-0 text-center input-number" value="0" min="0"
+              max="1">
+            <div class="input-group-append">
+              <span class="input-group-text p-0">
+                <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="plus"
+                  data-field="small" (click)="plusminus($event)">
+                  +
+                </button>
+              </span>
+            </div>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let topping of toppings; let t = index">
+        <td scope="row">{{topping.name}} ({{topping.price | currency:'USD'}})</td>
+        <td *ngFor="let pizza of pizzas; let p = index">
+          <label class="checkbox-outer">
+            <input id="{{pizza.size.toLowerCase()+'-'+p}}" class="small-checkbox" type="checkbox" [value]="topping.price" data-size="small"
+               (click)="chooseToppingItem($event, pizza, topping)">
+            <span class="checkmark"></span>
+          </label>
+        </td>
+        <!-- <td scope="row">{{topping.name}} ({{topping.price | currency:'USD'}})</td>
+        <td [ngClass]="{'disabled': order.small.length<1}">
+          <label class="checkbox-outer">
+            <input id="{{'sm-v-'+i}}" class="small-checkbox" type="checkbox" [value]="veg.rate" data-size="small"
+              [disabled]="order.small.length<1" (click)="chooseToppingItem($event, veg)">
+            <span class="checkmark"></span>
+          </label>
+        </td>
+        <td [ngClass]="{'disabled': order.medium.length<1}">
+          <label class="checkbox-outer">
+            <input id="{{'md-v-'+i}}" class="medium-checkbox" type="checkbox" [value]="veg.rate" data-size="medium"
+              [disabled]="order.medium.length<1" (click)="chooseToppingItem($event, veg)">
+            <span class="checkmark"></span>
+          </label>
+        </td>
+        <td [ngClass]="{'disabled': order.large.length<1}">
+          <label class="checkbox-outer">
+            <input id="{{'lg-v-'+i}}" class="large-checkbox" type="checkbox" [value]="veg.rate" data-size="large"
+              [disabled]="order.large.length<1" (click)="chooseToppingItem($event, veg)">
+            <span class="checkmark"></span>
+          </label>
+        </td>
+        <td [ngClass]="{'disabled': order.extralarge.length<1}">
+          <label class="checkbox-outer">
+            <input id="{{'xlg-v-'+i}}" class="extralarge-checkbox" type="checkbox" [value]="veg.rate" data-size="extralarge"
+              [disabled]="order.extralarge.length<1" (click)="chooseToppingItem($event, veg)">
+            <span class="checkmark"></span>
+          </label>
+        </td> -->
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- <table class="table table-bordered table-sm mt-5">
+    <thead>
+      <tr>
+        <th scope="col">Toppings</th>
         <th scope="col">Small ({{pizzaSizes.small.rate | currency:'USD' }})
           <div class="quantity-btns input-group">
             <div class="input-group-prepend">
@@ -200,6 +271,6 @@
         <td><span [innerHtml]="getPrice(order.extralarge, 'extralarge')"></span> </td>
       </tr>
     </tbody>
-  </table>
+  </table> -->
   <p class="text-right small"><i> <b> Note: DP = Discounted Price, AP = Actual Price </b></i></p>
 </div>

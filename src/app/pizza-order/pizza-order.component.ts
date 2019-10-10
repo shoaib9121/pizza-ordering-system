@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { IPizza } from '../pizza/pizza.interface';
+import { Pizza } from '../pizza/pizza.model';
+import { Topping } from '../topping/topping.model';
 import * as $ from 'jquery';
+import { ITopping } from '../topping/topping.interface';
 
 @Component({
   selector: 'app-pizza-order',
@@ -7,7 +11,9 @@ import * as $ from 'jquery';
   styleUrls: ['./pizza-order.component.scss']
 })
 export class PizzaOrderComponent implements OnInit {
-  constructor() { }
+  constructor(private pizza: Pizza, private topping: Topping) { }
+  pizzas: IPizza[];
+  toppings: ITopping[];
   offer1;
   offer2;
   offer3;
@@ -15,60 +21,60 @@ export class PizzaOrderComponent implements OnInit {
   mddiscount;
   smdiscount;
   showDiscounted;
-  toppings: any = {
-    veg: [
-      {
-        name: 'Tomatoes',
-        rate: 1.00
-      },
-      {
-        name: 'Onions',
-        rate: 0.50
-      },
-      {
-        name: 'Bell pepper',
-        rate: 1.00
-      },
-      {
-        name: 'Mushrooms',
-        rate: 1.20
-      },
-      {
-        name: 'Pineapple',
-        rate: 0.75
-      }
-    ],
-    nonveg: [
-      {
-        name: 'Sausage',
-        rate: 1.00
-      },
-      {
-        name: 'Pepperoni',
-        rate: 2.00
-      },
-      {
-        name: 'Barbecue chicken',
-        rate: 3.00
-      }
-    ],
+  // toppings: any = {
+  //   veg: [
+  //     {
+  //       name: 'Tomatoes',
+  //       rate: 1.00
+  //     },
+  //     {
+  //       name: 'Onions',
+  //       rate: 0.50
+  //     },
+  //     {
+  //       name: 'Bell pepper',
+  //       rate: 1.00
+  //     },
+  //     {
+  //       name: 'Mushrooms',
+  //       rate: 1.20
+  //     },
+  //     {
+  //       name: 'Pineapple',
+  //       rate: 0.75
+  //     }
+  //   ],
+  //   nonveg: [
+  //     {
+  //       name: 'Sausage',
+  //       rate: 1.00
+  //     },
+  //     {
+  //       name: 'Pepperoni',
+  //       rate: 2.00
+  //     },
+  //     {
+  //       name: 'Barbecue chicken',
+  //       rate: 3.00
+  //     }
+  //   ],
 
-  }
+  // }
 
-  pizzaSizes: any = {
-    small: {
-      rate: 5.00
-    },
-    medium: {
-      rate: 7.00
-    },
-    large: {
-      rate: 8.00
-    },
-    extralarge: {
-      rate: 9.00
-    }
-  }
+  // pizzaSizes: any = {
+  //   small: {
+  //     rate: 5.00
+  //   },
+  //   medium: {
+  //     rate: 7.00
+  //   },
+  //   large: {
+  //     rate: 8.00
+  //   },
+  //   extralarge: {
+  //     rate: 9.00
+  //   }
+  // }
 
   order: any = {
     small: [],
@@ -78,41 +84,76 @@ export class PizzaOrderComponent implements OnInit {
   };
 
   ngOnInit() {
+    this.pizzas = this.pizza.pizzas;
+    this.toppings = this.topping.toppings;
+    // console.log('pizzas', this.pizzas);
+    // console.log('toppings', this.toppings);
   }
 
-  chooseToppingItem(e, obj) {
-    let target = e.currentTarget,
-      id = target.getAttribute('id'),
-      value = target.value,
-      checked = target.checked,
-      size = target.getAttribute('data-size');
-    // console.log(`checked: ${e.currentTarget.checked}, val: ${e.currentTarget.value}, size: ${size}`)
-    let item = {
-      id: id,
-      name: obj.name,
-      rate: value,
-      checked: checked,
-      size: size
-    }
-
-    if (item.checked) {
-      this.order[size].forEach((val, i) => {
-        this.order[size][i].toppings.push(item)
-      })
-    } else {
-      let index;
-      let checkItem = this.order[size][0]["toppings"].find((element, j) => {
-        if (element.id === item.id) {
-          index = j;
-          return element;
+  chooseToppingItem(e, pizza:IPizza, topping:ITopping) {
+    let target = e.currentTarget, checked = target.checked;
+    let size = pizza["size"].toLowerCase();
+    if(this.order[size].length<1){
+      const pizzaItem:IPizza = {price: null, size: null, topping: []};
+      pizzaItem["size"] = pizza["size"];
+      pizzaItem["price"] = pizza["price"];
+      pizzaItem["topping"].push(topping)
+      this.order[size].push(pizzaItem)
+    }else{
+      this.order[size].forEach(item=>{
+        let toppings = item["topping"];
+        if (toppings.some(e => e.name != topping.name) && checked) {
+          toppings.push(topping);
+          console.log('toppings pushed', toppings)
         }
-      });
-      this.order[size].forEach((val, k) => {
-        this.order[size][k].toppings.splice(index, 1)
+        else if(!checked){
+          let index = toppings.findIndex(i => i.name === topping.name);
+          if(index) toppings.splice(index,1);
+          console.log('toppings spliced', toppings)
+        }
       })
     }
-    console.log(this.order.medium)
-    this.checkPromotions();
+    console.log('order', this.order);
+    
+  }
+
+  // chooseToppingItem(e, obj) {
+  //   let target = e.currentTarget,
+  //     id = target.getAttribute('id'),
+  //     value = target.value,
+  //     checked = target.checked,
+  //     size = target.getAttribute('data-size');
+  //   // console.log(`checked: ${e.currentTarget.checked}, val: ${e.currentTarget.value}, size: ${size}`)
+  //   let item = {
+  //     id: id,
+  //     name: obj.name,
+  //     rate: value,
+  //     checked: checked,
+  //     size: size
+  //   }
+
+  //   if (item.checked) {
+  //     this.order[size].forEach((val, i) => {
+  //       this.order[size][i].toppings.push(item)
+  //     })
+  //   } else {
+  //     let index;
+  //     let checkItem = this.order[size][0]["toppings"].find((element, j) => {
+  //       if (element.id === item.id) {
+  //         index = j;
+  //         return element;
+  //       }
+  //     });
+  //     this.order[size].forEach((val, k) => {
+  //       this.order[size][k].toppings.splice(index, 1)
+  //     })
+  //   }
+  //   console.log(this.order.medium)
+  //   this.checkPromotions();
+  // }
+
+  pizzaQuantity(e){
+
   }
 
   plusminus(e) {
