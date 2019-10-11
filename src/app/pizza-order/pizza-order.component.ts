@@ -76,6 +76,7 @@ export class PizzaOrderComponent implements OnInit {
   //   }
   // }
 
+  orderKeys = Object.keys;
   order: any = {
     small: [],
     medium: [],
@@ -86,168 +87,78 @@ export class PizzaOrderComponent implements OnInit {
   ngOnInit() {
     this.pizzas = this.pizza.pizzas;
     this.toppings = this.topping.toppings;
-    // console.log('pizzas', this.pizzas);
-    // console.log('toppings', this.toppings);
+    console.log(this.pizzas)
   }
 
-  chooseToppingItem(e, pizza:IPizza, topping:ITopping) {
+  chooseToppingItem(e, pizza: IPizza, topping: ITopping) {
     let target = e.currentTarget, checked = target.checked;
-    let size = pizza["size"].toLowerCase();
-    if(this.order[size].length<1){
-      const pizzaItem:IPizza = {price: null, size: null, topping: []};
+    let size = pizza["size"].toLowerCase().replace(' ', ''), order = this.order[size];
+    if (order.length < 1) {
+      const pizzaItem: IPizza = { price: null, size: null, toppings: [] };
       pizzaItem["size"] = pizza["size"];
       pizzaItem["price"] = pizza["price"];
-      pizzaItem["topping"].push(topping)
-      this.order[size].push(pizzaItem)
-    }else{
-      this.order[size].forEach(item=>{
-        let toppings = item["topping"];
-        if (toppings.some(e => e.name != topping.name) && checked) {
+      pizzaItem["toppings"].push(topping);
+      order.push(pizzaItem);
+    } else {
+      order.forEach((item, i) => {
+        let toppings = item["toppings"];
+        if (toppings.length < 1) { // NO TOPPINGS THEN ADD
           toppings.push(topping);
-          console.log('toppings pushed', toppings)
+        } else { // TOPPINGS EXIST
+          if (toppings.some(e => e.name != topping.name) && checked) { // TOPPING ENABLED
+            toppings.push(topping);
+            this.getPrice(this.order[size], size);
+            console.log('toppings pushed', toppings)
+          }
+          else if (!checked) { // TOPPING DISABLED
+            let index = toppings.findIndex(i => i.name === topping.name);
+            if (index) toppings.splice(index, 1);
+            this.getPrice(this.order[size], size);
+            console.log('toppings spliced', toppings)
+          }
         }
-        else if(!checked){
-          let index = toppings.findIndex(i => i.name === topping.name);
-          if(index) toppings.splice(index,1);
-          console.log('toppings spliced', toppings)
-        }
+        order[i]["toppings"] = toppings;
       })
     }
+    this.checkPromotions(size);
     console.log('order', this.order);
-    
   }
 
-  // chooseToppingItem(e, obj) {
-  //   let target = e.currentTarget,
-  //     id = target.getAttribute('id'),
-  //     value = target.value,
-  //     checked = target.checked,
-  //     size = target.getAttribute('data-size');
-  //   // console.log(`checked: ${e.currentTarget.checked}, val: ${e.currentTarget.value}, size: ${size}`)
-  //   let item = {
-  //     id: id,
-  //     name: obj.name,
-  //     rate: value,
-  //     checked: checked,
-  //     size: size
-  //   }
-
-  //   if (item.checked) {
-  //     this.order[size].forEach((val, i) => {
-  //       this.order[size][i].toppings.push(item)
-  //     })
-  //   } else {
-  //     let index;
-  //     let checkItem = this.order[size][0]["toppings"].find((element, j) => {
-  //       if (element.id === item.id) {
-  //         index = j;
-  //         return element;
-  //       }
-  //     });
-  //     this.order[size].forEach((val, k) => {
-  //       this.order[size][k].toppings.splice(index, 1)
-  //     })
-  //   }
-  //   console.log(this.order.medium)
-  //   this.checkPromotions();
-  // }
-
-  pizzaQuantity(e){
-
+  getQtyFromOrder(size): void {
+    size = size.toLowerCase().replace(' ', '');
+    return this.order[size].length;
   }
 
-  plusminus(e) {
-    let target = e.currentTarget;
-    let parent = $(target).parents('.quantity-btns');
-    let size = target.getAttribute('data-field');
-    let type = target.getAttribute('data-type');
-    var input = parent.find("input[name='" + size + "']");
-    var currentVal = parseInt(input.val());
-    if (!isNaN(currentVal)) {
-      if (type == 'minus') {
-
-        if (currentVal > input.attr('min')) {
-          currentVal--;
-          input.val(currentVal).change();
-          this.orderQuantity(size, currentVal, type)
-        }
-        if (parseInt(input.val()) == input.attr('min')) {
-          $(this).attr('disabled', true);
-        }
-
-      } else if (type == 'plus') {
-
-        if (currentVal < input.attr('max')) {
-          currentVal++;
-          input.val(currentVal).change();
-          this.orderQuantity(size, currentVal, type)
-        }
-        if (parseInt(input.val()) == input.attr('max')) {
-          $(this).attr('disabled', true);
-        }
-      }
-      this.checkPromotions();
-    } else {
-      input.val(0);
-    }
-
-  }
-
-  orderQuantity(size, currentVal, type) {
-    if (type == 'plus') {
-      var cloneDeal = JSON.parse(JSON.stringify(this.order[size]));
-      if (cloneDeal.length > 0) {
-        this.order[size].push(cloneDeal[0]);
-      } else { // NO TOPPING ADDED BY DEFAULT
-        this.order[size].push({
-          rate: this.pizzaSizes[size].rate,
-          toppings: []
-        });
-      }
-    } else {
-      this.order[size].splice(0, 1);
-      if (this.order[size].length == 0) {
-        let els = document.getElementsByClassName(size + '-checkbox');
-        console.log('els', els)
-        Array.prototype.forEach.call(els, function (el, i) {
-          el.checked = false;
-        });
+  pizzaQuantity(e, pizza: IPizza) {
+    let size = pizza["size"].toLowerCase().replace(' ', '');
+    let order = this.order[size], target = e.currentTarget, type = target.getAttribute('data-type');
+    if (type === 'increment') {
+      if (order.length > 0) {
+        let item = order[0];
+        order.push(item);
+      } else {  // PUSH DEFAULT PIZZA HERE
+        const pizzaItem: IPizza = { price: null, size: null, toppings: [] };
+        pizzaItem["size"] = pizza["size"];
+        pizzaItem["price"] = pizza["price"];
+        order.push(pizzaItem);
       }
     }
-    // console.log(this.order)
+    else if (type === 'decrement') {
+      if (order.length > 0) { // SPLICE ITEM IN ANY CASE
+        let item = order[0];
+        order.splice(0, 1);
+      }
+    }
+    this.checkPromotions(size);
+    console.log('order', this.order);
   }
 
-  checkPromotions() {
-    // OFFER 1
-    if (this.order.small.length >= 1) {
-      this.order.small.forEach(el => {
-        if ('toppings' in el) {
-          let toppings = el.toppings;
-          if (toppings.length == 2) {
-            this.offer1 = "Offer 1 - Applied";
-          } else { this.offer1 = null; }
-        }
-      })
-    } else { this.offer1 = null; }
-
-    // OFFER 2
-    if (this.order.medium.length == 2) {
-      this.order.medium.forEach(deal => {
-        if ('toppings' in deal) {
-          let toppings = deal.toppings;
-          if (toppings.length == 4) {
-            this.offer2 = "Offer 2 - Applied";
-          } else { this.offer2 = null; }
-        }
-      })
-    } else { this.offer2 = null; }
-
-    // OFFER 3
+  getOfferThree() {
     if (this.order.large.length >= 1) {
       let pep = false, bbq = false, matched = [];
       this.order.large.forEach(deal => {
-        if ('toppings' in deal) {
-          let toppings = deal.toppings;
+        if ("toppings" in deal) {
+          let toppings = deal["toppings"];
           toppings.forEach(topping => {
             if (topping.name.toLowerCase() === 'pepperoni') pep = true;
             if (topping.name.toLowerCase() === 'barbecue chicken') bbq = true;
@@ -258,49 +169,88 @@ export class PizzaOrderComponent implements OnInit {
       else { this.offer3 = null; }
 
     } else { this.offer3 = null; }
+  }
 
+  getOfferTwo() {
+    if (this.order.medium.length == 2) {
+      this.order.medium.forEach(deal => {
+        if ("toppings" in deal) {
+          let toppings = deal["toppings"];
+          if (toppings.length == 4) {
+            this.offer2 = "Offer 2 - Applied";
+          } else { this.offer2 = null; }
+        }
+      })
+    } else { this.offer2 = null; }
+  }
+
+  getOfferOne() {
+    if (this.order.small.length >= 1) {
+      this.order.small.forEach(el => {
+        if ("toppings" in el) {
+          let toppings = el.toppings;
+          if (toppings.length == 2) {
+            this.offer1 = "Offer 1 - Applied";
+          } else { this.offer1 = null; }
+        }
+      })
+    } else { this.offer1 = null; }
+  }
+
+  checkPromotions(size) {
+    // OFFER 1
+    if (size == 'small')
+      this.getOfferOne();
+
+    // OFFER 2
+    if (size == 'medium')
+      this.getOfferTwo();
+
+    // OFFER 3
+    if (size == 'large')
+      this.getOfferThree();
   }
 
   getPrice(orderArr, size) {
-    let sumPrice = 0, qty = 0, rate;
+    let sumPrice = 0, qty = 0, price;
     if (orderArr.length > 0) {
       switch (size) {
         case 'small':
-          sumPrice += this.pizzaSizes.small.rate;
+          sumPrice += this.order.small[0].price;
           break;
         case 'medium':
-          sumPrice += this.pizzaSizes.medium.rate;
+          sumPrice += this.order.medium[0].price;
           break;
         case 'large':
-          sumPrice += this.pizzaSizes.large.rate;
+          sumPrice += this.order.large[0].price;
           break;
         case 'extralarge':
-          sumPrice += this.pizzaSizes.extralarge.rate;
+          sumPrice += this.order.extralarge[0].price;
           break;
         default:
           sumPrice += 0.00;
       }
       orderArr.forEach((element, i) => {
         qty++;
-        if ('rate' in element) {
-          rate = parseFloat(element['rate']);
+        if ('price' in element) {
+          price = parseFloat(element['price']);
         }
-        let toppings = 'toppings' in element ? element.toppings : [];
+        let toppings = "toppings" in element ? element["toppings"] : [];
         let pep, pepRate, bbq, bbqRate, sumOfPairDeal;
         if (toppings.length > 0) {
           toppings.forEach(topping => {
             if (size == 'large') {
               if (topping.name.toLowerCase() === 'pepperoni') {
-                pepRate = parseFloat(topping.rate);
-                pep = true;
+                pepRate = parseFloat(topping.price);
+                pep = true; // PEPPERONI INCLUDED
               }
               if (topping.name.toLowerCase() === 'barbecue chicken') {
-                bbqRate = parseFloat(topping.rate);
-                bbq = true;
+                bbqRate = parseFloat(topping.price);
+                bbq = true; // BBQ INCLUDED
               }
-              sumPrice += parseFloat(topping.rate);
+              sumPrice += parseFloat(topping.price);
             } else {
-              sumPrice += parseFloat(topping.rate);
+              sumPrice += parseFloat(topping.price);
             }
           })
           if (size == 'large') {
@@ -311,7 +261,7 @@ export class PizzaOrderComponent implements OnInit {
           }
         }
       });
-      sumPrice += (rate * (qty - 1)); // DEDUCT DEFAULT SIZE RATE FROM NO.OF QUANTITY AS IT HAS ALREADY BEEN ADDED ONCE IN SWITCH CASE ABOVE
+      sumPrice += (price * (qty - 1)); // DEDUCT DEFAULT SIZE RATE FROM NO.OF QUANTITY AS IT HAS ALREADY BEEN ADDED ONCE IN SWITCH CASE ABOVE
     }
 
     // HANDLE OFFER 3
@@ -329,7 +279,7 @@ export class PizzaOrderComponent implements OnInit {
     }
     // HANDLE OFFER 1
     else if (this.offer1 && size == 'small' && sumPrice > 0) {
-      this.smdiscount = this.pizzaSizes.small.rate;
+      this.smdiscount = this.order.small[0].price;
       this.showDiscounted = true;
       return `<b>AP: $${sumPrice}</b> <br> <b>DP: $${this.smdiscount.toFixed(2)} </b>`;
       // return `<span class='strike'> $${sumPrice} </span> <b>DP: $${this.smdiscount.toFixed(2)} </b>`;
