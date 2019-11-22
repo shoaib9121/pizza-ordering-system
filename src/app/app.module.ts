@@ -4,7 +4,9 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PizzaOrderComponent } from './pizza-order/pizza-order.component';
-import { Pizza } from '../app/pizza/pizza.model';
+import { PizzaSmall } from './concrete-classes/pizza-sizes/pizza-small.model';
+import { PizzaMedium } from './concrete-classes/pizza-sizes/pizza-medium.model';
+// import { Pizza } from '../app/abstractions/pizza.model';
 import { Topping } from '../app/topping/topping.model';
 
 @NgModule({
@@ -17,7 +19,7 @@ import { Topping } from '../app/topping/topping.model';
     BrowserModule,
     AppRoutingModule
   ],
-  providers: [Pizza, Topping],
+  providers: [PizzaSmall, PizzaMedium, Topping],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

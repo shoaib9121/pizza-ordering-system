@@ -1,8 +1,10 @@
 import { ITopping } from '../topping/topping.interface';
 
 export interface IPizza {
+    // toppings?: any,
     price: any,
-    size: string,
-    toppings?: ITopping[],
-    getPrice?(): number
+    getPrice(): any,
+    getToppings(): any,
+    // topping: any,
+    // price(): any
 }
