@@ -10,6 +10,7 @@ import { PizzaSmall } from '../concrete-classes/pizza-sizes/pizza-small.model';
 // TOPPING CLASSES
 import { SausageTopping } from '../concrete-classes/toppings/SausageTopping.model';
 import { PepperoniTopping } from '../concrete-classes/toppings/PepperoniTopping.model';
+import { timer } from 'rxjs';
 
 @Component({
   selector: 'app-pizza-order',
@@ -17,18 +18,48 @@ import { PepperoniTopping } from '../concrete-classes/toppings/PepperoniTopping.
   styleUrls: ['./pizza-order.component.scss']
 })
 export class PizzaOrderComponent implements OnInit {
-  order;
+  // order;
   pizza = {'pizza': null};
   pizzaPackage;
+  confirmArrivalTimer:any = undefined;
+  confirmArrival:boolean = false;
   constructor() { 
     this.pizza['pizza'] = new PizzaMedium();
-    this.pizza['toppings'] = [];
-    this.pizza['toppings'].push(new SausageTopping(this.pizza['pizza'], 'Sausage', 1.00));
-    this.pizza['toppings'].push(new PepperoniTopping(this.pizza['pizza'], 'Pepperoni', 2.00));
+    // this.pizza['toppings'] = [];
+    // this.pizza['toppings'].push(new SausageTopping(this.pizza['pizza'], 'Sausage', 1.00));
+    // this.pizza['toppings'].push(new PepperoniTopping(this.pizza['pizza'], 'Pepperoni', 2.00));
+
     // this.pizza = new PizzaSmall();
     // this.pizza = new SausageTopping(this.pizza, 'Sausage', 1.00);
     // this.pizza = new PepperoniTopping(this.pizza, 'Pepperoni', 2.00);
     console.log(this.pizza)
+  }
+  
+  clickMe(){
+    let seconds = '5';
+    // this.confirmArrival = true;
+    this.confirmArrivalTimer = seconds;
+    localStorage.setItem('confirm_arrival_timer', seconds);
+    var timerInterval = setInterval( () => {
+
+      let timerProp = localStorage.getItem('confirm_arrival_timer');
+      if(timerProp != null){
+        timerProp = JSON.parse(timerProp);
+        if(typeof timerProp == 'number'){
+          timerProp--;
+          this.confirmArrivalTimer = timerProp;
+          if(timerProp <= 0 ){
+            clearInterval(timerInterval);
+            localStorage.removeItem('confirm_arrival_timer');
+            // this.confirmArrival = false;
+          }else
+            localStorage.setItem('confirm_arrival_timer', timerProp);
+        }
+
+        console.log('timerProp:', timerProp);
+        console.log('confirmArrivalTimer:', this.confirmArrivalTimer);
+      }
+    }, 1000);
   }
   
   ngOnInit() {
@@ -42,7 +73,7 @@ export class PizzaOrderComponent implements OnInit {
     // })
     console.log('all toppings :',toppings);
   }
-  
+
   totalPrice() {
     let sum = 0;
     let prices = this.pizza.pizza.getPrice();
@@ -53,7 +84,7 @@ export class PizzaOrderComponent implements OnInit {
   }
 
   /*//////////////// OLD IMPLEMENTATION ///////////////////*/
-  // pizzas: IPizza[];
+  pizzas: IPizza[];
   // toppings: ITopping[];
   // offer1;
   // offer2;
@@ -62,68 +93,93 @@ export class PizzaOrderComponent implements OnInit {
   // mddiscount;
   // smdiscount;
   // showDiscounted;
-  // toppings: any = {
-  //   veg: [
-  //     {
-  //       name: 'Tomatoes',
-  //       rate: 1.00
-  //     },
-  //     {
-  //       name: 'Onions',
-  //       rate: 0.50
-  //     },
-  //     {
-  //       name: 'Bell pepper',
-  //       rate: 1.00
-  //     },
-  //     {
-  //       name: 'Mushrooms',
-  //       rate: 1.20
-  //     },
-  //     {
-  //       name: 'Pineapple',
-  //       rate: 0.75
-  //     }
-  //   ],
-  //   nonveg: [
-  //     {
-  //       name: 'Sausage',
-  //       rate: 1.00
-  //     },
-  //     {
-  //       name: 'Pepperoni',
-  //       rate: 2.00
-  //     },
-  //     {
-  //       name: 'Barbecue chicken',
-  //       rate: 3.00
-  //     }
-  //   ],
+  toppings: any = {
+    veg: [
+      {
+        name: 'Tomatoes',
+        rate: 1.00
+      },
+      {
+        name: 'Onions',
+        rate: 0.50
+      },
+      {
+        name: 'Bell pepper',
+        rate: 1.00
+      },
+      {
+        name: 'Mushrooms',
+        rate: 1.20
+      },
+      {
+        name: 'Pineapple',
+        rate: 0.75
+      }
+    ],
+    nonveg: [
+      {
+        name: 'Sausage',
+        rate: 1.00
+      },
+      {
+        name: 'Pepperoni',
+        rate: 2.00
+      },
+      {
+        name: 'Barbecue chicken',
+        rate: 3.00
+      }
+    ],
 
-  // }
+  }
+  pizzaSizes: any = {
+    small: {
+      rate: 5.00
+    },
+    medium: {
+      rate: 7.00
+    },
+    large: {
+      rate: 8.00
+    },
+    extralarge: {
+      rate: 9.00
+    }
+  }
 
-  // pizzaSizes: any = {
-  //   small: {
-  //     rate: 5.00
-  //   },
-  //   medium: {
-  //     rate: 7.00
-  //   },
-  //   large: {
-  //     rate: 8.00
-  //   },
-  //   extralarge: {
-  //     rate: 9.00
-  //   }
-  // }
+  sizes: any = [
+      {
+        name: 'small',
+        rate: 5.00
+      },
+      {
+        name: 'medium',
+        rate: 6.00
+      },
+      {
+        name: 'large',
+        rate: 7.00
+      },
+      {
+        name: 'extra large',
+        rate: 8.00
+      },
+      
+  ]
 
-  // orderKeys = Object.keys;
-  // order: any = {
-  //   small: [],
-  //   medium: [],
-  //   large: [],
-  //   extralarge: []
-  // };
+  orderKeys = Object.keys;
+  order: any = {
+    small: [],
+    medium: [],
+    large: [],
+    extralarge: []
+  };
+
+  selectTopping(i, j) {
+    const topping = this.toppings['nonveg'][i];
+    const size = this.sizes[j];
+    debugger
+  }
 
   // ngOnInit() {
   //   this.pizzas = this.pizza.pizzas;

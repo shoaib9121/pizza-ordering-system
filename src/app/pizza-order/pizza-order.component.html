@@ -4,6 +4,8 @@
   <div class="card text-center">
     <div class="card-header">
       Promotional Offers
+      <button class="btn btn-info" (click)="clickMe()" [disabled]="confirmArrivalTimer && confirmArrivalTimer != '0'">Click</button>
+
     </div>
     <div class="card-block">
       <ul class="list">
@@ -23,7 +25,7 @@
     <thead>
       <tr>
         <th scope="col">Toppings </th>
-        <th scope="col" *ngFor="let pizza of pizzas">{{pizza.size}} {{pizza.price | currency:'USD'}}
+        <th scope="col" *ngFor="let pizza of pizzaSizes">{{pizza.size}} {{pizza.price | currency:'USD'}}
           <div class="quantity-btns input-group">
             <div class="input-group-prepend">
               <span class="input-group-text p-0">
@@ -76,8 +78,8 @@
         <td><span [innerHtml]="getPrice(order.extralarge, 'extralarge')"></span> </td>
       </tr>
     </tbody>
-  </table>
-  <table class="table table-bordered table-sm mt-5">
+  </table> -->
+  <!-- <table class="table table-bordered table-sm mt-5">
     <tbody>
       <tr *ngFor="let key of orderKeys(order)">
         <td>{{key}}</td>
@@ -92,7 +94,7 @@
     </tbody>
   </table> -->
 
-  <!-- <table class="table table-bordered table-sm mt-5">
+  <table class="table table-bordered table-sm mt-5">
     <thead>
       <tr>
         <th scope="col">Toppings</th>
@@ -101,7 +103,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text p-0">
                 <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="minus"
-                  data-field="small" (click)="plusminus($event)">
+                  data-field="small">
                   -
                 </button>
               </span>
@@ -111,7 +113,7 @@
             <div class="input-group-append">
               <span class="input-group-text p-0">
                 <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="plus"
-                  data-field="small" (click)="plusminus($event)">
+                  data-field="small">
                   +
                 </button>
               </span>
@@ -123,7 +125,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text p-0">
                 <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="minus"
-                  data-field="medium" (click)="plusminus($event)">
+                  data-field="medium">
                   -
                 </button>
               </span>
@@ -133,7 +135,7 @@
             <div class="input-group-append">
               <span class="input-group-text p-0">
                 <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="plus"
-                  data-field="medium" (click)="plusminus($event)">
+                  data-field="medium">
                   +
                 </button>
               </span>
@@ -145,7 +147,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text p-0">
                 <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="minus"
-                  data-field="large" (click)="plusminus($event)">
+                  data-field="large">
                   -
                 </button>
               </span>
@@ -155,7 +157,7 @@
             <div class="input-group-append">
               <span class="input-group-text p-0">
                 <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="plus"
-                  data-field="large" (click)="plusminus($event)">
+                  data-field="large">
                   +
                 </button>
               </span>
@@ -167,7 +169,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text p-0">
                 <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="minus"
-                  data-field="extralarge" (click)="plusminus($event)">
+                  data-field="extralarge">
                   -
                 </button>
               </span>
@@ -177,7 +179,7 @@
             <div class="input-group-append">
               <span class="input-group-text p-0">
                 <button type="button" class="btn btn-sm bg-transparent btn-number pt-0 pb-0" data-type="plus"
-                  data-field="extralarge" (click)="plusminus($event)">
+                  data-field="extralarge">
                   +
                 </button>
               </span>
@@ -195,28 +197,28 @@
         <td [ngClass]="{'disabled': order.small.length<1}">
           <label class="checkbox-outer">
             <input id="{{'sm-v-'+i}}" class="small-checkbox" type="checkbox" [value]="veg.rate" data-size="small"
-              [disabled]="order.small.length<1" (click)="chooseToppingItem($event, veg)">
+              >
             <span class="checkmark"></span>
           </label>
         </td>
         <td [ngClass]="{'disabled': order.medium.length<1}">
           <label class="checkbox-outer">
             <input id="{{'md-v-'+i}}" class="medium-checkbox" type="checkbox" [value]="veg.rate" data-size="medium"
-              [disabled]="order.medium.length<1" (click)="chooseToppingItem($event, veg)">
+              >
             <span class="checkmark"></span>
           </label>
         </td>
         <td [ngClass]="{'disabled': order.large.length<1}">
           <label class="checkbox-outer">
             <input id="{{'lg-v-'+i}}" class="large-checkbox" type="checkbox" [value]="veg.rate" data-size="large"
-              [disabled]="order.large.length<1" (click)="chooseToppingItem($event, veg)">
+              >
             <span class="checkmark"></span>
           </label>
         </td>
         <td [ngClass]="{'disabled': order.extralarge.length<1}">
           <label class="checkbox-outer">
             <input id="{{'xlg-v-'+i}}" class="extralarge-checkbox" type="checkbox" [value]="veg.rate" data-size="extralarge"
-              [disabled]="order.extralarge.length<1" (click)="chooseToppingItem($event, veg)">
+              >
             <span class="checkmark"></span>
           </label>
         </td>
@@ -226,35 +228,12 @@
       </tr>
       <tr *ngFor="let veg of toppings.nonveg; let i = index">
         <td scope="row">{{veg.name}} ({{veg.rate | currency:'USD'}})</td>
-        <td [ngClass]="{'disabled': order.small.length<1}">
+        <td *ngFor="let size of sizes; let j = index">
           <label class="checkbox-outer">
-            <input id="{{'sm-nv-'+i}}" class="small-checkbox" type="checkbox" [value]="veg.rate" data-size="small"
-              [disabled]="order.small.length<1" (click)="chooseToppingItem($event, veg)">
+            <input class="small-checkbox" type="checkbox" (click)="selectTopping(i, j)">
             <span class="checkmark"></span>
           </label>
         </td>
-        <td [ngClass]="{'disabled': order.medium.length<1}">
-          <label class="checkbox-outer">
-            <input id="{{'md-nv-'+i}}" class="medium-checkbox" type="checkbox" [value]="veg.rate" data-size="medium"
-              [disabled]="order.medium.length<1" (click)="chooseToppingItem($event, veg)">
-            <span class="checkmark"></span>
-          </label>
-        </td>
-        <td [ngClass]="{'disabled': order.large.length<1}">
-          <label class="checkbox-outer">
-            <input id="{{'lg-nv-'+i}}" class="large-checkbox" type="checkbox" [value]="veg.rate" data-size="large"
-              [disabled]="order.large.length<1" (click)="chooseToppingItem($event, veg)">
-            <span class="checkmark"></span>
-          </label>
-        </td>
-        <td [ngClass]="{'disabled': order.extralarge.length<1}">
-          <label class="checkbox-outer">
-            <input id="{{'xlg-nv-'+i}}" class="extralarge-checkbox" type="checkbox" [value]="veg.rate" data-size="extralarge"
-              [disabled]="order.extralarge.length<1" (click)="chooseToppingItem($event, veg)">
-            <span class="checkmark"></span>
-          </label>
-        </td>
-      </tr>
       <tr>
         <th class="total" colspan="5">Total</th>
       </tr>
@@ -265,14 +244,14 @@
         <td>{{offer3}}</td>
         <td></td>
       </tr>
-      <tr>
+      <!-- <tr>
         <td>&nbsp;</td>
         <td><span [innerHtml]="getPrice(order.small, 'small')"></span></td>
         <td><span [innerHtml]="getPrice(order.medium, 'medium')"></span> </td>
         <td><span [innerHtml]="getPrice(order.large, 'large')"></span> </td>
         <td><span [innerHtml]="getPrice(order.extralarge, 'extralarge')"></span> </td>
-      </tr>
+      </tr> -->
     </tbody>
-  </table> -->
+  </table>
   <p class="text-right small"><i> <b> Note: DP = Discounted Price, AP = Actual Price </b></i></p>
 </div>
